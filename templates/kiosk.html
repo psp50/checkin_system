@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Denimsandjeans — Show Entry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --indigo-deep:   #202e47;
+    --indigo-mid:    #32466b;
+    --indigo-panel:  #2c3f63;
+    --denim-fade:    #7790b4;
+    --stitch-cream:  #f4ecd8;
+    --copper:        #c2773a;
+    --copper-dark:   #8f5325;
+    --thread-green:  #5b8a63;
+    --thread-red:    #b5544a;
+    --ink:           #1a2335;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background: var(--indigo-deep);
+    background-image:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 2px, transparent 2px, transparent 6px);
+    color: var(--stitch-cream);
+    font-family: 'Inter', sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 32px 16px;
+  }
+
+  .kiosk{
+    width:100%;
+    max-width: 480px;
+  }
+
+  .brand{
+    text-align:center;
+    margin-bottom: 28px;
+  }
+
+  .brand .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--copper);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .brand h1{
+    font-family:'Zilla Slab', serif;
+    font-weight: 700;
+    font-size: 34px;
+    letter-spacing: 1px;
+    margin: 0;
+    color: var(--stitch-cream);
+  }
+
+  .brand .sub{
+    font-size: 14px;
+    color: var(--denim-fade);
+    margin-top: 6px;
+  }
+
+  /* the "pocket" card — stitched border + rivets, like a denim back pocket */
+  .pocket{
+    position: relative;
+    background: var(--indigo-panel);
+    border-radius: 4px;
+    padding: 36px 30px 30px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  }
+
+  .pocket::before{
+    content:"";
+    position:absolute;
+    inset: 12px;
+    border: 2px dashed rgba(244,236,216,0.28);
+    border-radius: 2px;
+    pointer-events:none;
+  }
+
+  .rivet{
+    position:absolute;
+    width:10px; height:10px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #e6a565, var(--copper-dark));
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .rivet.tl{ top:10px; left:10px; }
+  .rivet.tr{ top:10px; right:10px; }
+  .rivet.bl{ bottom:10px; left:10px; }
+  .rivet.br{ bottom:10px; right:10px; }
+
+  form label{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--denim-fade);
+    margin-bottom: 8px;
+  }
+
+  .input-row{
+    display:flex;
+    gap: 10px;
+  }
+
+  input[type="text"]{
+    flex:1;
+    background: var(--indigo-deep);
+    border: 1px solid rgba(244,236,216,0.25);
+    border-radius: 3px;
+    padding: 14px 14px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 16px;
+    color: var(--stitch-cream);
+    letter-spacing: 1px;
+  }
+
+  input[type="text"]::placeholder{
+    color: rgba(244,236,216,0.35);
+  }
+
+  input[type="text"]:focus{
+    outline: 2px solid var(--copper);
+    outline-offset: 1px;
+  }
+
+  button{
+    background: var(--copper);
+    color: var(--ink);
+    border: none;
+    border-radius: 3px;
+    padding: 0 22px;
+    font-family:'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  button:hover{ background: #d4894c; }
+  button:focus-visible{ outline: 2px solid var(--stitch-cream); outline-offset: 2px; }
+
+  .hint{
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgba(119,144,180,0.9);
+  }
+
+  /* result card */
+  .result{
+    margin-top: 26px;
+    border-radius: 3px;
+    padding: 20px 20px 18px;
+    border-left: 4px solid var(--thread-green);
+    background: rgba(244,236,216,0.06);
+  }
+  .result.is-error{ border-left-color: var(--thread-red); }
+  .result.is-repeat{ border-left-color: var(--copper); }
+
+  .status-line{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+  }
+  .status-line.ok{ color: #9fd1a6; }
+  .status-line.err{ color: #e5a39c; }
+  .status-line.repeat{ color: #e8b787; }
+
+  .detail-grid{
+    display:grid;
+    grid-template-columns: 130px 1fr;
+    row-gap: 8px;
+    font-size: 14px;
+  }
+  .detail-grid .k{
+    color: var(--denim-fade);
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-top:2px;
+  }
+  .detail-grid .v{ color: var(--stitch-cream); }
+
+  .badge-chip{
+    display:inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(194,119,58,0.18);
+    color: var(--copper);
+    border: 1px solid rgba(194,119,58,0.4);
+  }
+
+  .group-source{
+    font-size: 11px;
+    color: var(--denim-fade);
+    margin-left: 6px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top: 22px;
+    font-size: 11px;
+    color: rgba(119,144,180,0.7);
+    font-family:'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="kiosk">
+  <div class="brand">
+    <div class="eyebrow">B2B Show Entry · Touchless Check-In</div>
+    <h1>DENIM<span style="color:var(--copper);">&amp;</span>JEANS</h1>
+    <div class="sub">Scan your badge details below to enter the show floor</div>
+  </div>
+
+  <div class="pocket">
+    <span class="rivet tl"></span>
+    <span class="rivet tr"></span>
+    <span class="rivet bl"></span>
+    <span class="rivet br"></span>
+
+    <form method="POST" action="/" autocomplete="off">
+      <input type="hidden" name="form_name" value="checkin">
+      <label for="identifier">Visitor ID or Phone Number</label>
+      <div class="input-row">
+        <input
+          type="text"
+          id="identifier"
+          name="identifier"
+          placeholder="e.g. DJ001 or 9876500001"
+          value="{{ submitted_value }}"
+          autofocus
+        >
+        <button type="submit">Check In</button>
+      </div>
+      <div class="hint">Lost your badge code? Ask the help desk for your Visitor ID.</div>
+    </form>
+
+    {% if result %}
+      {% if result.status == "not_found" %}
+        <div class="result is-error">
+          <div class="status-line err">✕ NOT FOUND</div>
+          <div>{{ result.message }}</div>
+        </div>
+
+      {% else %}
+        {% set v = result.visitor %}
+        <div class="result {% if result.status == 'already_checked_in' %}is-repeat{% endif %}">
+          {% if result.status == "success" %}
+            <div class="status-line ok">✓ CHECKED IN</div>
+          {% else %}
+            <div class="status-line repeat">↻ ALREADY ON THE FLOOR</div>
+          {% endif %}
+
+          <div class="detail-grid">
+            <div class="k">Name</div>
+            <div class="v">{{ v.full_name }}</div>
+
+            <div class="k">Company</div>
+            <div class="v">{{ v.company_name }}</div>
+
+            <div class="k">Badge</div>
+            <div class="v"><span class="badge-chip">{{ v.badge_type }}</span></div>
+
+            <div class="k">Group</div>
+            <div class="v">{{ result.group }}<span class="group-source">({{ result.group_source }})</span></div>
+
+            <div class="k">Time</div>
+            <div class="v">{{ v.check_in_time }}</div>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="pocket" style="margin-top:22px;">
+    <span class="rivet tl"></span>
+    <span class="rivet tr"></span>
+    <span class="rivet bl"></span>
+    <span class="rivet br"></span>
+
+    <div class="eyebrow" style="margin-bottom:14px;">Exhibitor / Visitor Eligibility</div>
+
+    <form method="POST" action="/" autocomplete="off">
+      <input type="hidden" name="form_name" value="verify_company">
+      <label for="company_name">Company Name</label>
+      <div class="input-row">
+        <input
+          type="text"
+          id="company_name"
+          name="company_name"
+          placeholder="e.g. Levi's"
+          value="{{ submitted_company }}"
+        >
+        <button type="submit">Verify</button>
+      </div>
+      <div class="hint">We check this live against the web — no internet, no result.</div>
+    </form>
+
+    {% if company_result %}
+      {% if company_result.lookup_failed %}
+        <div class="result is-error">
+          <div class="status-line err">✕ LOOKUP FAILED</div>
+          <div>Couldn't reach the web to verify "{{ company_result.company_name }}". Check your internet connection and try again.</div>
+        </div>
+
+      {% elif company_result.accepted %}
+        <div class="result">
+          <div class="status-line ok">✓ DENIM-INDUSTRY RELATED</div>
+          <div class="detail-grid">
+            <div class="k">Company</div>
+            <div class="v">{{ company_result.company_name }}</div>
+
+            <div class="k">Matched On</div>
+            <div class="v">{{ company_result.matched_keywords | join(", ") }}</div>
+          </div>
+        </div>
+
+      {% else %}
+        <div class="result is-error">
+          <div class="status-line err">✕ NOT DENIM-RELATED</div>
+          <div>No connection to denim, textiles, or apparel found for "{{ company_result.company_name }}". Entry not approved.</div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <footer>DENIMSANDJEANS · INDIA · EGYPT · JAPAN · KOREA · VIETNAM</footer>
+</div>
+
+</body>
+</html>
