@@ -23,3 +23,22 @@ Think of it as a digital reception desk for the show:
    (like a random bank or unrelated business), it gets rejected — no entry.
 
 That's it. No paperwork, no manual lookup — just type and go.
+
+
+This is a simple web tool with two main features:
+
+Visitor Check-In — Staff type in a Visitor ID or phone number, and it instantly pulls up that person's name, company, and category, then marks them as checked in with a timestamp.
+Company Verification — Type in any company name, and it searches the web live to check if that company is actually connected to the denim/textile industry. If not, entry is rejected.
+
+What's in the database
+
+One table called visitors, with these columns for each person:
+
+Visitor ID
+Name
+Phone number
+Company name
+Category (Mill, Retailer, Brand, etc.)
+Badge type (Visitor/Exhibitor/Speaker/Press)
+Checked-in status (yes/no)
+Check-in time
